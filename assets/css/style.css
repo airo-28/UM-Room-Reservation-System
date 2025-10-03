@@ -1,0 +1,14 @@
+:root{
+  --primary:#5b4bff;
+  --accent:#9f7aea;
+  --bg:#f7f7fb;
+}
+body{ background:var(--bg); }
+.card-shadow{ box-shadow:0 10px 30px rgba(0,0,0,.08); border:0; }
+.hero{ background: linear-gradient(135deg, rgba(91,75,255,.08), rgba(159,122,234,.08)); border-radius:24px; }
+.badge-soft{ background: rgba(91,75,255,.1); color:#3e2bff; }
+.room-card img{ border-top-left-radius: .6rem; border-top-right-radius: .6rem; transition: transform .4s ease; }
+.room-card:hover img{ transform: scale(1.04); }
+.hover-lift{ transition: transform .2s ease, box-shadow .2s ease; }
+.hover-lift:hover{ transform: translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.12); }
+footer{ color:#667; }
