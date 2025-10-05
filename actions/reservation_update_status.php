@@ -1,31 +1,43 @@
 <?php
 require_once __DIR__.'/../lib/auth.php';
-require_once __DIR__.'/../lib/csrf.php';
-require_once __DIR__.'/../config/db.php';
-require_once __DIR__.'/../lib/helpers.php';
-
-start_session();
 require_role(['admin']);
+require_once __DIR__.'/../lib/csrf.php';
+require_once __DIR__.'/../lib/helpers.php';
+require_once __DIR__.'/../config/db.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  verify_csrf();
-} else {
-  redirect('calendar.php');
-  exit;
-}
+verify_csrf();
 
 $id     = (int)($_POST['id'] ?? 0);
-$status = $_POST['status'] ?? '';
+$status = strtolower(trim((string)($_POST['status'] ?? ''))); // approved|rejected
+$note   = trim($_POST['note'] ?? '');
+$admin  = user();
 
-$allowed = ['approved','rejected'];
-if ($id <= 0 || !in_array($status, $allowed, true)) {
+if ($id <= 0 || !in_array($status, ['approved','rejected'], true)) {
   set_flash('err','Invalid request','danger');
   redirect('calendar.php');
-  exit;
 }
 
-$st = $pdo->prepare("UPDATE reservations SET status=? WHERE id=?");
-$st->execute([$status, $id]);
+// fetch current status
+$st = $pdo->prepare("SELECT id, status FROM reservations WHERE id=? LIMIT 1");
+$st->execute([$id]);
+$cur = $st->fetch();
+if (!$cur) {
+  set_flash('err','Reservation not found','danger');
+  redirect('calendar.php');
+}
+$from = strtolower(trim((string)$cur['status']));
+$to   = $status;
 
-set_flash('ok','Reservation updated');
+// update reservation status
+$up = $pdo->prepare("UPDATE reservations SET status=? WHERE id=? LIMIT 1");
+$up->execute([$to, $id]);
+
+// write transaction log
+$log = $pdo->prepare("
+  INSERT INTO reservation_logs (reservation_id, action, from_status, to_status, actor_user_id, actor_role, note)
+  VALUES (?,?,?,?,?,?,?)
+");
+$log->execute([$id, $to, $from, $to, (int)$admin['id'], 'admin', $note !== '' ? $note : null]);
+
+set_flash('ok', 'Reservation '.$to);
 redirect('calendar.php');

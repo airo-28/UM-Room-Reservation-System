@@ -25,6 +25,13 @@ $u = user();
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('resources.php')); ?>"><i class="bi bi-box-seam me-1"></i>Resources</a></li>
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('users.php')); ?>"><i class="bi bi-people me-1"></i>Users</a></li>
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('calendar.php')); ?>"><i class="bi bi-calendar3 me-1"></i>Calendar</a></li>
+            <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('transactions.php')); ?>"><i class="bi bi-journal-text me-1"></i>Transactions</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo h(base_url('announcements.php')); ?>">
+                  <i class="bi bi-megaphone"></i> Announcements
+                </a>
+            </li>
+            
           <?php else: ?>
             <!-- User menu -->
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('dashboard_user.php')); ?>"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>

@@ -34,15 +34,15 @@ $pending = qall($pdo, "
   LIMIT 6
 ");
 
-$topRooms = qall($pdo, "
-  SELECT rm.name,
-         SUM(TIMESTAMPDIFF(MINUTE, CONCAT(r.date,' ',r.start_time), CONCAT(r.date,' ',r.end_time)))/60 AS hrs
-  FROM reservations r
-  JOIN rooms rm ON rm.id=r.room_id
-  WHERE r.status='approved' AND r.date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-  GROUP BY rm.id
-  ORDER BY hrs DESC
-  LIMIT 5
+/* New: fetch latest active announcements for the right column */
+$announcements = qall($pdo, "
+  SELECT id, title, severity, COALESCE(starts_at, created_at) AS ts
+  FROM announcements
+  WHERE is_active=1
+    AND (starts_at IS NULL OR starts_at <= NOW())
+    AND (ends_at   IS NULL OR ends_at   >= NOW())
+  ORDER BY COALESCE(starts_at, created_at) DESC
+  LIMIT 6
 ");
 ?>
 <style>
@@ -113,7 +113,7 @@ $topRooms = qall($pdo, "
     </div>
   </div>
 
-  <!-- Pending Approvals + Top Rooms -->
+  <!-- Pending Approvals + System Announcements -->
   <div class="row g-3 mt-1">
     <div class="col-lg-7" data-aos="fade-right">
       <div class="card p-3 shadow-sm h-100 hover-lift">
@@ -159,24 +159,30 @@ $topRooms = qall($pdo, "
 
     <div class="col-lg-5" data-aos="fade-left">
       <div class="card p-3 shadow-sm h-100 hover-lift">
-        <h5 class="mb-2"><i class="bi bi-trophy me-2"></i>Top Rooms (30 days)</h5>
-        <?php if($topRooms): ?>
-          <div class="table-responsive">
-            <table class="table table-sm align-middle mb-0">
-              <thead><tr><th>Room</th><th class="text-end">Hours</th></tr></thead>
-              <tbody>
-              <?php foreach($topRooms as $t): ?>
-                <tr>
-                  <td><?php echo h($t['name']); ?></td>
-                  <td class="text-end"><?php echo number_format((float)$t['hrs'],1); ?></td>
-                </tr>
-              <?php endforeach; ?>
-              </tbody>
-            </table>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0"><i class="bi bi-megaphone me-2"></i>System Announcements</h5>
+          <a class="small" href="<?php echo h(base_url('announcements.php')); ?>"><i class="bi bi-gear me-1"></i>Manage</a>
+        </div>
+        <?php if($announcements): ?>
+          <div class="list-group list-group-flush">
+            <?php foreach($announcements as $a): ?>
+              <?php $badge = ($a['severity']==='danger') ? 'bg-danger' : (($a['severity']==='warning') ? 'bg-warning text-dark' : 'bg-info text-dark'); ?>
+              <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="badge <?php echo $badge; ?> me-2"><?php echo h(ucfirst($a['severity'])); ?></span>
+                    <strong><?php echo h($a['title']); ?></strong>
+                  </div>
+                  <small class="text-muted"><?php echo h(date('M j, Y', strtotime($a['ts']))); ?></small>
+                </div>
+              </div>
+            <?php endforeach; ?>
           </div>
         <?php else: ?>
-          <div class="text-muted small">No data in last 30 days.</div>
+          <div class="text-muted small">No active announcements.</div>
         <?php endif; ?>
+        <hr class="my-3">
+        <div class="small"><i class="bi bi-info-circle me-1"></i>Only active announcements within their time window are shown to users.</div>
       </div>
     </div>
   </div>

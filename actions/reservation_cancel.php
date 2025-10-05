@@ -8,7 +8,7 @@ start_session();
 require_login();
 verify_csrf();
 
-$u = user();
+$u   = user();
 $uid = (int)$u['id'];
 $id  = (int)($_POST['id'] ?? 0);
 
@@ -30,18 +30,29 @@ if (!$r || (int)$r['user_id'] !== $uid) {
   redirect('my_reservations.php');
 }
 
-// Only allow cancel if it’s in the future and not already rejected/canceled
-$now      = new DateTime('now');
-$startDT  = DateTime::createFromFormat('Y-m-d H:i:s', $r['date'].' '.$r['start_time']);
-$allowed  = in_array($r['status'], ['pending','approved'], true) && $startDT && $startDT > $now;
+// Only allow cancel if future and currently pending/approved
+$now     = new DateTime('now');
+$startDT = DateTime::createFromFormat('Y-m-d H:i:s', $r['date'].' '.$r['start_time']);
+$from    = strtolower(trim((string)$r['status']));
+$can     = in_array($from, ['pending','approved'], true) && $startDT && $startDT > $now;
 
-if (!$allowed) {
+if (!$can) {
   set_flash('err','This reservation cannot be canceled','danger');
   redirect('my_reservations.php');
 }
 
-$up = $pdo->prepare("UPDATE reservations SET status='canceled' WHERE id=? LIMIT 1");
-$up->execute([$id]);
+$to = 'canceled';
+
+// update reservation
+$up = $pdo->prepare("UPDATE reservations SET status=? WHERE id=? LIMIT 1");
+$up->execute([$to, $id]);
+
+// transaction log with auto note
+$log = $pdo->prepare("
+  INSERT INTO reservation_logs (reservation_id, action, from_status, to_status, actor_user_id, actor_role, note)
+  VALUES (?,?,?,?,?,?,?)
+");
+$log->execute([$id, $to, $from, $to, $uid, 'user', 'Canceled by user.']);
 
 set_flash('ok','Reservation canceled');
 redirect('my_reservations.php');

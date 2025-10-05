@@ -19,7 +19,7 @@ require_once __DIR__.'/../partials/nav.php';
 <div class="container my-5">
   <div class="row align-items-center g-4">
     <div class="col-lg-6">
-      <h1 class="mb-3">Welcome to CST5L Room Reservations</h1>
+      <h1 class="mb-3">Welcome to UM Room Reservations</h1>
       <p class="lead text-muted">Browse rooms, view details, and book hourly slots from 8:00 AM to 9:00 PM.</p>
       <div class="d-flex gap-2 mt-3">
         <a class="btn btn-primary" href="<?php echo h(base_url('login.php')); ?>">Sign in</a>

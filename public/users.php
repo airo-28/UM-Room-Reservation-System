@@ -15,12 +15,17 @@ if ($editId) {
   $editRow = $s->fetch();
 }
 
-$users = $pdo->query('SELECT id, full_name, email, role, created_at FROM users ORDER BY created_at DESC')->fetchAll();
+$users = $pdo->query("
+  SELECT id, full_name, email,
+         COALESCE(NULLIF(TRIM(role),''), 'user') AS role,
+         created_at
+  FROM users
+  ORDER BY created_at DESC
+")->fetchAll();
 ?>
 <div class="container">
   <?php require __DIR__.'/../partials/flash.php'; ?>
   <div class="row g-3">
-    <!-- Edit/Add Form -->
     <div class="col-md-5" data-aos="fade-right">
       <div class="card card-shadow p-3">
         <h5 class="d-flex align-items-center justify-content-between">
@@ -29,11 +34,9 @@ $users = $pdo->query('SELECT id, full_name, email, role, created_at FROM users O
             <a class="btn btn-sm btn-outline-secondary" href="<?php echo h(base_url('users.php')); ?>">Clear</a>
           <?php endif; ?>
         </h5>
-
         <form method="post" action="<?php echo h(base_url('../actions/user_crud.php')); ?>">
           <?php csrf_field(); ?>
           <input type="hidden" name="id" value="<?php echo $editRow ? (int)$editRow['id'] : ''; ?>">
-
           <div class="mb-2">
             <label class="form-label">Full Name</label>
             <input name="full_name" class="form-control" required value="<?php echo $editRow ? h($editRow['full_name']) : ''; ?>">
@@ -44,10 +47,10 @@ $users = $pdo->query('SELECT id, full_name, email, role, created_at FROM users O
           </div>
           <div class="mb-2">
             <label class="form-label">Role</label>
+            <?php $role = $editRow['role'] ?? 'user'; ?>
             <select name="role" class="form-select">
-              <?php $role = $editRow['role'] ?? 'user'; ?>
-              <option value="user" <?php echo $role==='user'?'selected':''; ?>>User</option>
-              <option value="admin" <?php echo $role==='admin'?'selected':''; ?>>Admin</option>
+              <option value="user"  <?php echo $role==='user' ? 'selected':''; ?>>User</option>
+              <option value="admin" <?php echo $role==='admin'? 'selected':''; ?>>Admin</option>
             </select>
           </div>
           <button class="btn btn-primary"><?php echo $editRow ? 'Update' : 'Save'; ?></button>
@@ -55,7 +58,6 @@ $users = $pdo->query('SELECT id, full_name, email, role, created_at FROM users O
       </div>
     </div>
 
-    <!-- User List -->
     <div class="col-md-7" data-aos="fade-left">
       <div class="card card-shadow p-3">
         <h5 class="mb-2"><i class="bi bi-people me-1"></i>Users</h5>
@@ -72,11 +74,15 @@ $users = $pdo->query('SELECT id, full_name, email, role, created_at FROM users O
             </thead>
             <tbody>
               <?php foreach ($users as $u): ?>
+                <?php
+                  $r = strtolower($u['role']);
+                  $badge = $r==='admin' ? 'bg-primary' : 'bg-secondary';
+                ?>
                 <tr>
                   <td><?php echo h($u['full_name']); ?></td>
                   <td><?php echo h($u['email']); ?></td>
-                  <td><?php echo h($u['role']); ?></td>
-                  <td><?php echo h($u['created_at']); ?></td>
+                  <td><span class="badge <?php echo $badge; ?>"><?php echo h(ucfirst($r)); ?></span></td>
+                  <td class="small text-muted"><?php echo h($u['created_at']); ?></td>
                   <td class="text-end">
                     <a class="btn btn-outline-primary btn-sm" href="?edit=<?php echo (int)$u['id']; ?>"><i class="bi bi-pencil-square"></i></a>
                     <form class="d-inline" method="post" action="<?php echo h(base_url('../actions/user_crud.php')); ?>" data-confirm="Delete this user?">
