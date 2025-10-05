@@ -12,4 +12,4 @@ start_session();
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="icon" href="<?php echo h(base_url('../assets/img/ui/logo.png')); ?>">
 <link rel="stylesheet" href="<?php echo h(base_url('../assets/css/style.css')); ?>">
-</head><body>
+</head><body class="<?php echo isset($PAGE_CLASS) ? h($PAGE_CLASS) : 'bg-app'; ?>"></body>

@@ -3,7 +3,7 @@ require_once __DIR__.'/../partials/head.php';
 require_once __DIR__.'/../partials/nav.php';
 require_role(['admin']);
 require_once __DIR__.'/../config/db.php';
-require_once __DIR__.'/../lib/csrf.php'; // needed for csrf_field()
+require_once __DIR__.'/../lib/csrf.php';
 require_once __DIR__.'/../lib/helpers.php';
 
 function q1($pdo,$sql,$args=[]){ $st=$pdo->prepare($sql); $st->execute($args); return $st->fetchColumn(); }
@@ -21,7 +21,7 @@ $recent = qall($pdo, "
   JOIN users u ON u.id=r.user_id
   JOIN rooms rm ON rm.id=r.room_id
   ORDER BY r.date DESC, r.start_time DESC
-  LIMIT 8
+  LIMIT 3
 ");
 
 $pending = qall($pdo, "
@@ -31,10 +31,10 @@ $pending = qall($pdo, "
   JOIN rooms rm ON rm.id=r.room_id
   WHERE r.status='pending'
   ORDER BY r.created_at ASC
-  LIMIT 6
+  LIMIT 3
 ");
 
-/* New: fetch latest active announcements for the right column */
+/* Latest active announcements (shown to users) */
 $announcements = qall($pdo, "
   SELECT id, title, severity, COALESCE(starts_at, created_at) AS ts
   FROM announcements
@@ -46,20 +46,30 @@ $announcements = qall($pdo, "
 ");
 ?>
 <style>
-  .kpi-card { border: 0; border-radius: 1rem; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
-  .kpi-icon { width: 44px; height: 44px; border-radius: 12px; display:flex; align-items:center; justify-content:center; }
+  .kpi-card { border:0; border-radius: var(--radius,1rem); box-shadow: var(--shadow,0 6px 24px rgba(0,0,0,.06)); }
+  .kpi-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
   .kpi-rooms   { background: rgba(13,110,253,.12); }
   .kpi-users   { background: rgba(25,135,84,.12); }
   .kpi-today   { background: rgba(255,193,7,.18); }
   .kpi-pending { background: rgba(220,53,69,.14); }
   .hover-lift { transition: transform .2s ease, box-shadow .2s ease; }
-  .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,.10); }
+  .hover-lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg,0 18px 60px rgba(0,0,0,.16)); }
   .chip { display:inline-block; padding:.15rem .5rem; border-radius:999px; font-size:.75rem; background:#f1f3f5; }
   .status-badge { font-size:.75rem; }
 </style>
 
 <div class="container my-3">
   <?php require __DIR__.'/../partials/flash.php'; ?>
+
+  <!-- Top header for consistency -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+    <div class="section-bar">
+      <span class="fw-semibold"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</span>
+    </div>
+    <div class="d-none d-md-block text-muted small ms-3">
+      Overview of system activity and announcements.
+    </div>
+  </div>
 
   <!-- KPI cards -->
   <div class="row g-3">
@@ -124,28 +134,14 @@ $announcements = qall($pdo, "
         <?php if($pending): ?>
           <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
-              <thead><tr><th>When</th><th>Room</th><th>User</th><th>Purpose</th><th class="text-end">Action</th></tr></thead>
+              <thead><tr><th>When</th><th>Room</th><th>User</th><th>Purpose</th></tr></thead>
               <tbody>
               <?php foreach($pending as $p): ?>
                 <tr>
                   <td class="small"><?php echo h($p['date'].' '.substr($p['start_time'],0,5).'–'.substr($p['end_time'],0,5)); ?></td>
                   <td class="small"><span class="chip"><i class="bi bi-building me-1"></i><?php echo h($p['room_name']); ?></span></td>
                   <td class="small"><?php echo h($p['full_name']); ?></td>
-                  <td class="small text-truncate" style="max-width:180px;"><?php echo h($p['purpose']); ?></td>
-                  <td class="text-end">
-                    <form class="d-inline" method="post" action="<?php echo h(base_url('../actions/reservation_update_status.php')); ?>" data-confirm="Approve this reservation?">
-                      <?php csrf_field(); ?>
-                      <input type="hidden" name="id" value="<?php echo (int)$p['id']; ?>">
-                      <input type="hidden" name="status" value="approved">
-                      <button class="btn btn-success btn-sm"><i class="bi bi-check2"></i></button>
-                    </form>
-                    <form class="d-inline" method="post" action="<?php echo h(base_url('../actions/reservation_update_status.php')); ?>" data-confirm="Reject this reservation?">
-                      <?php csrf_field(); ?>
-                      <input type="hidden" name="id" value="<?php echo (int)$p['id']; ?>">
-                      <input type="hidden" name="status" value="rejected">
-                      <button class="btn btn-danger btn-sm"><i class="bi bi-x"></i></button>
-                    </form>
-                  </td>
+                  <td class="small text-truncate" style="max-width:220px;"><?php echo h($p['purpose']); ?></td>
                 </tr>
               <?php endforeach; ?>
               </tbody>
@@ -166,7 +162,12 @@ $announcements = qall($pdo, "
         <?php if($announcements): ?>
           <div class="list-group list-group-flush">
             <?php foreach($announcements as $a): ?>
-              <?php $badge = ($a['severity']==='danger') ? 'bg-danger' : (($a['severity']==='warning') ? 'bg-warning text-dark' : 'bg-info text-dark'); ?>
+              <?php
+                $sev = strtolower($a['severity']);
+                $badge = ($sev==='important') ? 'bg-danger text-white'
+                        : (($sev==='notice') ? 'bg-warning text-dark'
+                        : (($sev==='update') ? 'bg-success text-white' : 'bg-info text-dark'));
+              ?>
               <div class="list-group-item">
                 <div class="d-flex justify-content-between align-items-start">
                   <div>
@@ -191,19 +192,22 @@ $announcements = qall($pdo, "
   <div class="row g-3 mt-1">
     <div class="col-12" data-aos="zoom-in">
       <div class="card p-3 shadow-sm hover-lift">
-        <h5 class="mb-2"><i class="bi bi-clock-history me-2"></i>Recent Reservations</h5>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Reservations</h5>
+          <a class="small" href="<?php echo h(base_url('calendar.php')); ?>">Open calendar →</a>
+        </div>
         <?php if($recent): ?>
           <div class="table-responsive">
             <table class="table table-sm align-middle mb-0">
               <thead><tr><th>When</th><th>Room</th><th>User</th><th>Status</th></tr></thead>
               <tbody>
               <?php foreach($recent as $r): ?>
+                <?php $s=strtolower($r['status']); ?>
                 <tr>
                   <td class="small"><?php echo h($r['date'].' '.substr($r['start_time'],0,5).'–'.substr($r['end_time'],0,5)); ?></td>
                   <td class="small"><span class="chip"><i class="bi bi-building me-1"></i><?php echo h($r['room_name']); ?></span></td>
                   <td class="small"><?php echo h($r['full_name']); ?></td>
                   <td class="small">
-                    <?php $s=strtolower($r['status']); ?>
                     <span class="badge rounded-pill status-badge
                       <?php echo $s==='approved'?'bg-success':($s==='pending'?'bg-warning text-dark':'bg-danger'); ?>">
                       <i class="bi <?php echo $s==='approved'?'bi-check2-circle':($s==='pending'?'bi-hourglass-split':'bi-x-circle'); ?> me-1"></i>

@@ -4,11 +4,30 @@ require_once __DIR__.'/../lib/helpers.php';
 start_session();
 $u = user();
 ?>
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+<style>
+  /* Brand styling scoped to navbar to avoid site-wide changes */
+  .brand-wrap { display:flex; align-items:center; gap:.5rem; text-decoration:none; }
+  .brand-mark { width:34px; height:34px; object-fit:contain; }
+  .brand-text {
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    font-weight: 800;
+    letter-spacing:.2px;
+    line-height:1;
+    display:flex; align-items:center; gap:.15rem;
+  }
+  .brand-text .collab { color:#C62828; }   /* red */
+  .brand-text .space  { color:#FFC107; }   /* yellow */
+  .navbar.sticky-top { box-shadow: 0 8px 24px rgba(0,0,0,.10); }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
   <div class="container-fluid">
     <!-- Brand -->
-    <a class="navbar-brand fw-bold text-primary" href="<?php echo h(base_url('index.php')); ?>">
-      <i class="bi bi-building-check me-1"></i> CollabSpace
+    <a class="navbar-brand brand-wrap" href="<?php echo h(base_url('index.php')); ?>">
+      <img class="brand-mark" src="<?php echo h(base_url('../assets/img/nav.png')); ?>" alt="CollabSpace">
+      <span class="brand-text">
+        <span class="collab">Collab</span><span class="space">Space</span>
+      </span>
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -22,16 +41,10 @@ $u = user();
             <!-- Admin menu -->
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('dashboard.php')); ?>"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('rooms.php')); ?>"><i class="bi bi-door-open me-1"></i>Manage Rooms</a></li>
-            <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('resources.php')); ?>"><i class="bi bi-box-seam me-1"></i>Resources</a></li>
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('users.php')); ?>"><i class="bi bi-people me-1"></i>Users</a></li>
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('calendar.php')); ?>"><i class="bi bi-calendar3 me-1"></i>Calendar</a></li>
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('transactions.php')); ?>"><i class="bi bi-journal-text me-1"></i>Transactions</a></li>
-            <li class="nav-item">
-                <a class="nav-link" href="<?php echo h(base_url('announcements.php')); ?>">
-                  <i class="bi bi-megaphone"></i> Announcements
-                </a>
-            </li>
-            
+            <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('announcements.php')); ?>"><i class="bi bi-megaphone me-1"></i>Announcements</a></li>
           <?php else: ?>
             <!-- User menu -->
             <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('dashboard_user.php')); ?>"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
@@ -52,7 +65,6 @@ $u = user();
           <!-- Guest menu -->
           <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('login.php')); ?>"><i class="bi bi-box-arrow-in-right me-1"></i>Login</a></li>
           <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('register.php')); ?>"><i class="bi bi-person-plus me-1"></i>Register</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?php echo h(base_url('rooms_gallery.php')); ?>"><i class="bi bi-collection me-1"></i>Browse Rooms</a></li>
         <?php endif; ?>
       </ul>
     </div>
