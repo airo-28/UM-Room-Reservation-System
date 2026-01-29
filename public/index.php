@@ -35,14 +35,13 @@ require_once __DIR__.'/../partials/nav.php';
         <div class="d-flex flex-wrap gap-3 mt-2">
           <a class="btn btn-primary px-4" href="<?php echo h(base_url('login.php')); ?>"><i class="bi bi-box-arrow-in-right me-1"></i>Sign In</a>
           <a class="btn btn-accent px-4" href="<?php echo h(base_url('register.php')); ?>"><i class="bi bi-person-plus me-1"></i>Create Account</a>
-          <a class="btn btn-outline-dark px-4" href="<?php echo h(base_url('rooms_gallery.php')); ?>"><i class="bi bi-collection me-1"></i>Browse Rooms</a>
         </div>
       </div>
     </div>
 
     <div class="col-lg-6" data-aos="fade-left">
       <div class="card shadow-sm border-0 overflow-hidden" style="border-radius:1rem;">
-        <img src="<?php echo h(base_url('../assets/img/ui/landing.jpg')); ?>" alt="Study rooms" class="w-100" style="aspect-ratio: 16/9; object-fit: cover;">
+        <img src="<?php echo h(base_url('../assets/img/ui/indexx.jpg')); ?>" alt="Study rooms" class="w-100" style="aspect-ratio: 16/9; object-fit: cover;">
       </div>
     </div>
   </div>

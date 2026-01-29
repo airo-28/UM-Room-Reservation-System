@@ -9,7 +9,7 @@ require_once __DIR__.'/../lib/helpers.php';
 
 $term = trim($_GET['q'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
-$per  = 10;
+$per  = 3;
 $off  = ($page - 1) * $per;
 
 $where  = '1=1';
@@ -140,7 +140,7 @@ if ($editId) {
                   <td><?php echo (int)$r['capacity']; ?></td>
                   <td><?php echo h($r['location']); ?></td>
                   <td class="small"><?php echo h($r['amenities']); ?></td>
-                  <td class="small text-muted" style="max-width:220px;"><?php echo h($r['description']); ?></td>
+                  <td class="small text-muted" style="max: width 500px;px;"><?php echo h($r['description']); ?></td>
                   <td class="small"><?php echo h(substr($r['open_time'],0,5)); ?>–<?php echo h(substr($r['close_time'],0,5)); ?></td>
                   <td><?php echo !empty($r['is_active']) ? 'Active' : 'Disabled'; ?></td>
                   <td class="text-nowrap text-end">

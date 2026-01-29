@@ -66,14 +66,11 @@ $announcements = qall($pdo, "
     <div class="section-bar">
       <span class="fw-semibold"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</span>
     </div>
-    <div class="d-none d-md-block text-muted small ms-3">
-      Overview of system activity and announcements.
-    </div>
   </div>
 
   <!-- KPI cards -->
   <div class="row g-3">
-    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="0">
+    <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="0">
       <div class="card kpi-card p-3 hover-lift">
         <div class="d-flex align-items-center gap-3">
           <div class="kpi-icon kpi-rooms"><i class="bi bi-door-open fs-5 text-primary"></i></div>
@@ -85,7 +82,7 @@ $announcements = qall($pdo, "
         <div class="small text-muted mt-2"><i class="bi bi-sliders me-1"></i>Manage in “Manage Rooms”</div>
       </div>
     </div>
-    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="60">
+    <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="60">
       <div class="card kpi-card p-3 hover-lift">
         <div class="d-flex align-items-center gap-3">
           <div class="kpi-icon kpi-users"><i class="bi bi-people fs-5 text-success"></i></div>
@@ -97,7 +94,7 @@ $announcements = qall($pdo, "
         <div class="small text-muted mt-2"><i class="bi bi-person-badge me-1"></i>Students & staff</div>
       </div>
     </div>
-    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="120">
+    <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="120">
       <div class="card kpi-card p-3 hover-lift">
         <div class="d-flex align-items-center gap-3">
           <div class="kpi-icon kpi-today"><i class="bi bi-calendar-day fs-5 text-warning"></i></div>
@@ -107,18 +104,6 @@ $announcements = qall($pdo, "
           </div>
         </div>
         <div class="small text-muted mt-2"><i class="bi bi-clock me-1"></i><?php echo $today; ?></div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="180">
-      <div class="card kpi-card p-3 hover-lift">
-        <div class="d-flex align-items-center gap-3">
-          <div class="kpi-icon kpi-pending"><i class="bi bi-hourglass-split fs-5 text-danger"></i></div>
-          <div>
-            <div class="text-muted small">Pending Approvals</div>
-            <div class="h3 mb-0"><?php echo $pendingCount; ?></div>
-          </div>
-        </div>
-        <div class="small mt-2"><a class="text-decoration-none" href="<?php echo h(base_url('calendar.php')); ?>"><i class="bi bi-check2-square me-1"></i>Review now</a></div>
       </div>
     </div>
   </div>
