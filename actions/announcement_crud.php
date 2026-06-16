@@ -18,7 +18,7 @@ $allowedSev = ['update','info','notice','important'];
 /* Delete */
 if (!empty($_POST['delete_id'])) {
   $id = (int)$_POST['delete_id'];
-  $st = $pdo->prepare("DELETE FROM announcements WHERE id=? LIMIT 1");
+  $st = $pdo->prepare("DELETE FROM announcements WHERE id=?");
   $st->execute([$id]);
   set_flash('ok','Announcement deleted');
   redirect('announcements.php');

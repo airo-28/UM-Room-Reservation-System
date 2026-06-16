@@ -26,7 +26,7 @@ if ($deleteId > 0) {
         exit;
     }
 
-    $st = $pdo->prepare('DELETE FROM users WHERE id=? LIMIT 1');
+    $st = $pdo->prepare('DELETE FROM users WHERE id=?');
     $st->execute([$deleteId]);
     set_flash('ok','User deleted.');
     redirect('users.php');

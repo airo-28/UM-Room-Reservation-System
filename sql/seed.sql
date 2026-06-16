@@ -1,10 +1,10 @@
 INSERT INTO users(full_name,email,password_hash,role) VALUES
-('Admin User','admin@example.com', '$2y$10$kqYf7y6O9b3cN7cZk9tEme3lH3xTqGQ2r5rAq0x7pQe5f0mQbV0cK','admin'); -- password: admin123
+('Admin User','admin@example.com', '$2y$10$FeQUvKQV.eP6kk45OxHr0.ezoq/B97csvyCPR61VwSdyAqvhCkz0W','admin'); -- password: admin123
 
-INSERT INTO rooms(name,location,capacity,type,is_active) VALUES
-('Collab Room A','Library 2F',6,'collab',1),
-('Computer Lab 1','IT Building 3F',30,'lab',1),
-('Classroom 101','Main Bldg',40,'classroom',1);
+INSERT INTO rooms(name,location,capacity,type,is_active,open_time,close_time) VALUES
+('Collab Room A','Library 2F',6,'collab',1,'08:00:00','21:00:00'),
+('Computer Lab 1','IT Building 3F',30,'lab',1,'08:00:00','21:00:00'),
+('Classroom 101','Main Bldg',40,'classroom',1,'08:00:00','21:00:00');
 
 INSERT INTO resources(name,is_active) VALUES
 ('Projector',1),('Whiteboard Markers',1),('HDMI Cable',1);

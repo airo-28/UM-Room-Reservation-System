@@ -44,7 +44,7 @@ if (!$can) {
 $to = 'canceled';
 
 // update reservation
-$up = $pdo->prepare("UPDATE reservations SET status=? WHERE id=? LIMIT 1");
+$up = $pdo->prepare("UPDATE reservations SET status=? WHERE id=?");
 $up->execute([$to, $id]);
 
 // transaction log with auto note

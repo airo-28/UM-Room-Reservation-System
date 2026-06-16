@@ -1,1 +1,5 @@
 PROGRAMMING-LANGUAGES/
+database.db
+bin/
+mail.log
+.DS_Store
