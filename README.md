@@ -223,4 +223,3 @@ To explore the system, you can use the default seeded accounts:
 
 ## 🤝 Contributing
 Feel free to open issues or submit pull requests to improve the system's design, feature set, or database migrations.
-
