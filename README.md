@@ -228,4 +228,4 @@ Feel free to open issues or submit pull requests to improve the system's design,
 
 ## 👥 Contributors
 -   **airo-coder** (Lead Developer)
--   **algernon-coder** (Co-author)
+-   **algernon-coder** (Co-authored contributor)
